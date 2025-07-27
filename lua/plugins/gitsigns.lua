@@ -2,7 +2,7 @@ return {
     -- INFO: Git symbols plugin
     'lewis6991/gitsigns.nvim',
     config = function()
-        vim.api.nvim_set_hl(0, 'GitSignsCurrentLineBlame', { fg = '#eac93a', italic = true })
+        vim.api.nvim_set_hl(0, 'CustomUsernameColor', { fg = '#eac93a', italic = true })
         vim.api.nvim_set_hl(0, "CustomCommitColor", { fg = "#fa6007", bold = true })
         vim.api.nvim_set_hl(0, "CustomCommitHashColor", { fg = "#b642f5", bold = true })
 
@@ -30,16 +30,18 @@ return {
                 delay = 1000,
             },
             current_line_blame_formatter = function(name, blame_info)
-                local git_user = vim.fn.system('git config user.name'):gsub('%s+$', '')
-                if name == "You" then
-                    name = git_user
-                end
-                return {
-                { " " .. name .. " - ", "GitSignsCurrentLineBlame" },  
-                { "Commit: ", "CustomCommitColor" },
-                { " " .. blame_info.abbrev_sha, "CustomCommitHashColor" },                     
-                }
-            end,
+        local git_user = vim.fn.system('git config user.name'):gsub('%s+$', '')
+        name = name or "Unknown" 
+        if name == "You" then
+            name = git_user
+        end
+        return {
+        { " " .. name .. " - ", "CustomUsernameColor" },
+        { "Commit: ", "CustomCommitColor" },
+        { " " .. (blame_info.abbrev_sha or "???????"), "CustomCommitHashColor" },
+        }
+        end,
+
             on_attach = function(bufnr)
                 vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gp', '<cmd>lua require("gitsigns").prev_hunk()<CR>', { noremap = true, silent = true })
                 vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>gn', '<cmd>lua require("gitsigns").next_hunk()<CR>', { noremap = true, silent = true })

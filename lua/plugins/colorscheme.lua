@@ -4,8 +4,8 @@ return {
   "catppuccin/nvim",
   "folke/tokyonight.nvim",
   "EdenEast/nightfox.nvim",
-  "eldritch-theme/eldritch.nvim",
   "Mofiqul/vscode.nvim",
   "navarasu/onedark.nvim",
   "Mofiqul/dracula.nvim"
 }
+

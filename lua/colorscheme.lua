@@ -1,4 +1,4 @@
 local M = {}
 -- INFO: Set the color scheme you want here
-M.colorscheme = "eldritch"
+M.colorscheme = "catppuccin-mocha"
 return M
