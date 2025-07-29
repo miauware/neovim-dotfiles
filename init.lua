@@ -275,8 +275,28 @@ vim.api.nvim_command([[
   menu PopUp.-Sep- <Nop>
   menu PopUp.Quit <cmd>quit<cr>
 ]])
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp", "java", "javascript", "typescript", "rust", "go" },
+  callback = function()
+    -- INFO: Prevent automatic comment continuation in //-style languages
+    vim.opt_local.formatoptions:remove({ "r", "o" })
+  end,
+})
 
-
-
-
-
+-- INFO: This autocommand writes the selected colorscheme to a Lua file
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function(args)
+    local theme = args.match
+    local path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua"
+    local file = io.open(path, "w")
+    if file then
+      file:write('local M = {}\n')
+      file:write('-- INFO: Set the color scheme you want here\n')
+      file:write(string.format('M.colorscheme = "%s"\n', theme))
+      file:write('return M\n')
+      file:close()
+    else
+      vim.notify("Failed to write to colorscheme.lua", vim.log.levels.ERROR)
+    end
+  end,
+})
