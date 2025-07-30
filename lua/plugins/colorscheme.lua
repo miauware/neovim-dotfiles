@@ -6,6 +6,8 @@ return {
   "EdenEast/nightfox.nvim",
   "Mofiqul/vscode.nvim",
   "navarasu/onedark.nvim",
-  "Mofiqul/dracula.nvim"
+  "Mofiqul/dracula.nvim",
+  "miauware/miauware.nvim"
 }
+
 
