@@ -1,4 +1,4 @@
 local M = {}
 -- INFO: Set the color scheme you want here
-M.colorscheme = "miauware"
+M.colorscheme = "catppuccin-mocha"
 return M
