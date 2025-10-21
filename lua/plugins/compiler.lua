@@ -3,7 +3,7 @@ return {
   "Zeioth/compiler.nvim",
   lazy = false,
   dependencies = {
-    "stevearc/overseer.nvim",
+    { "stevearc/overseer.nvim", version = "v1.6.0" },
     "nvim-telescope/telescope.nvim",
   },
   config = function()

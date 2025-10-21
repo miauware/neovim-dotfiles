@@ -1,26 +1,29 @@
+-- INFO: Set global leaders
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+
+-- INFO: Lazy.nvim bootstrap
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
+  vim.fn.system({
     'git',
     'clone',
     '--filter=blob:none',
     'https://github.com/folke/lazy.nvim.git',
     '--branch=stable',
     lazypath,
-  }
+  })
 end
 vim.opt.rtp:prepend(lazypath)
+
 require('lazy').setup({
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
   'tpope/vim-sleuth',
-
   { import = 'plugins' },
 }, {})
 
-
+-- INFO: Highlight text on yank
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
@@ -29,7 +32,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
-require('telescope').setup {
+
+-- INFO: Telescope configuration
+require('telescope').setup({
   defaults = {
     mappings = {
       i = {
@@ -38,26 +43,31 @@ require('telescope').setup {
       },
     },
   },
-}
+})
+pcall(require('telescope').load_extension, 'fzf')
 
+-- INFO: LSP diagnostics customization
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, {
+  vim.lsp.diagnostic.on_publish_diagnostics,
+  {
     underline = true,
     virtual_text = true,
     virtual_text_prefix = "",
-    update_in_insert=true,
-    signs=true,
-  })
-  local signs = { Error = "❌", Warn = "", Hint = "💡", Info = "ℹ️" }
-  for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-  end
-pcall(require('telescope').load_extension, 'fzf')
-require('nvim-treesitter.configs').setup {
-  ensure_installed = { 'c','css', 'cpp', 'go','markdown', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
-  auto_install = false,
+    update_in_insert = true,
+    signs = true,
+  }
+)
 
+local signs = { Error = "❌", Warn = "", Hint = "💡", Info = "ℹ️" }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
+
+-- INFO: Treesitter configuration
+require('nvim-treesitter.configs').setup({
+  ensure_installed = { 'c', 'css', 'cpp', 'go', 'markdown', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  auto_install = false,
   highlight = { enable = true },
   indent = { enable = true },
   incremental_selection = {
@@ -104,23 +114,19 @@ require('nvim-treesitter.configs').setup {
     },
     swap = {
       enable = true,
-      swap_next = {
-        ['<leader>a'] = '@parameter.inner',
-      },
-      swap_previous = {
-        ['<leader>A'] = '@parameter.inner',
-      },
+      swap_next = { ['<leader>a'] = '@parameter.inner' },
+      swap_previous = { ['<leader>A'] = '@parameter.inner' },
     },
   },
-}
+})
+
+-- INFO: LSP on_attach function
 local on_attach = function(_, bufnr)
   local nmap = function(keys, func, desc)
-    if desc then
-      desc = 'LSP: ' .. desc
-    end
-
+    if desc then desc = 'LSP: ' .. desc end
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
+
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
@@ -134,18 +140,14 @@ local on_attach = function(_, bufnr)
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
   nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
   nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, '[W]orkspace [L]ist Folders')
+  nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
+
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
 end
-local function tbl_add_reverse_lookup(tbl)
-  for k, v in pairs(tbl) do
-    tbl[v] = k
-  end
-end
+
+-- INFO: LSP servers configuration
 local servers = {
   lua_ls = {
     Lua = {
@@ -154,47 +156,60 @@ local servers = {
     },
   },
 }
+
 require('neodev').setup()
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
--- INFO: configure LSP servers with mason-lspconfig (without setup_handlers)
-local mason_lspconfig = require 'mason-lspconfig'
 
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
+local mason_lspconfig = require('mason-lspconfig')
 
-
+-- INFO: Configure servers using vim.lsp.config (Neovim 0.11+)
 for server_name, config in pairs(servers) do
-  require('lspconfig')[server_name].setup {
+  vim.lsp.config[server_name] = {
     capabilities = capabilities,
     on_attach = on_attach,
     settings = config,
   }
 end
 
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
+-- INFO: Start LSP servers once Mason ensures they are installed
+mason_lspconfig.setup({
+  ensure_installed = vim.tbl_keys(servers),
+})
 
-cmp.setup {
+for server_name, _ in pairs(servers) do
+  if vim.lsp.config[server_name] then
+    local ok, _ = pcall(vim.lsp.start, vim.lsp.config[server_name])
+    if not ok then
+      vim.notify("Failed to start LSP: " .. server_name, vim.log.levels.WARN)
+    end
+  end
+end
+
+-- INFO: nvim-cmp setup
+local cmp = require('cmp')
+local luasnip = require('luasnip')
+require('luasnip.loaders.from_vscode').lazy_load()
+luasnip.config.setup({})
+
+cmp.setup({
   snippet = {
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end,
   },
-  mapping = cmp.mapping.preset.insert {
+  mapping = cmp.mapping.preset.insert({
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
+    ['<C-Space>'] = cmp.mapping.complete({}),
+    ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Insert,
       select = true,
-      completion = {completeopt = 'menuone,noselect'},
-    },
+      completion = { completeopt = 'menuone,noselect' },
+    }),
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -213,21 +228,18 @@ cmp.setup {
         fallback()
       end
     end, { 'i', 's' }),
-  },
+  }),
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'buffer' },
     { name = 'path' },
-
   },
-
-}
-cmp.setup.cmdline('/', {
-  sources = {
-    { name = 'buffer' }
-  }
 })
+
+cmp.setup.cmdline('/', { sources = { { name = 'buffer' } } })
+
+-- INFO: UI and editor options
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.o.cmdheight = 0
@@ -245,7 +257,6 @@ vim.opt.autoindent = true
 vim.o.hlsearch = false
 vim.wo.number = true
 vim.o.mouse = 'a'
-vim.opt.mouse="a"
 vim.o.clipboard = 'unnamedplus'
 vim.o.breakindent = true
 vim.o.undofile = true
@@ -258,16 +269,19 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 vim.wo.wrap = true
 vim.o.linebreak = true
--- INFO: cursor color
+
+-- INFO: Cursor color
 vim.cmd('highlight Cursor guibg=#ab34eb')
--- Use colorscheme variable
+
+-- INFO: Load colorscheme
 local themes = require('colorscheme')
 vim.cmd("colorscheme " .. themes.colorscheme)
+
 require('keybindings')
-vim.cmd 'aunmenu PopUp.How-to\\ disable\\ mouse'
-vim.cmd 'aunmenu PopUp.-1-'
 
-
+-- INFO: Simplify right-click popup menu
+vim.cmd('aunmenu PopUp.How-to\\ disable\\ mouse')
+vim.cmd('aunmenu PopUp.-1-')
 vim.api.nvim_command([[
   menu PopUp.Copy <cmd>normal! "+y<cr>
   menu PopUp.Paste <cmd>normal! "+p<cr>
@@ -275,15 +289,16 @@ vim.api.nvim_command([[
   menu PopUp.-Sep- <Nop>
   menu PopUp.Quit <cmd>quit<cr>
 ]])
+
+-- INFO: Disable automatic comment continuation
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp", "java", "javascript", "typescript", "rust", "go" },
   callback = function()
-    -- INFO: Prevent automatic comment continuation in //-style languages
     vim.opt_local.formatoptions:remove({ "r", "o" })
   end,
 })
 
--- INFO: This autocommand writes the selected colorscheme to a Lua file
+-- INFO: Automatically save the last colorscheme used
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function(args)
     local theme = args.match
@@ -300,5 +315,3 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     end
   end,
 })
-
-
