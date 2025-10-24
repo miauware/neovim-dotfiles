@@ -20,7 +20,7 @@ return {
       local tasks = overseer.list_tasks({})
       for _, task in ipairs(tasks) do
         if not task:is_complete() then
-          task:cancel()
+          task:stop()
         end
       end
 
@@ -36,7 +36,7 @@ return {
       local tasks = overseer.list_tasks({})
       for _, task in ipairs(tasks) do
         if not task:is_complete() then
-          task:cancel()
+          task:stop()
         end
       end
 
