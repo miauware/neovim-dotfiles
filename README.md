@@ -26,10 +26,16 @@ files structure:
 
 >**⚠️ install nodejs and yarn before using the commands below**
 
->**⚠️ on windows you need to install neovim and the c/c++ compilation tools and add them to the path variable**
+for install requisites in arch based linux distros use :
+```bash
+sudo pacman -S nodejs npm yarn python-black
+```
+
+>**⚠️ on windows you need to install neovim and the c/c++ compilation tools and add them to the path variable for compile treesitter**
 
 
 # Usage:
+
 on linux :
 ```bash
 git clone --depth 1 https://github.com/miauware/neovim-dotfiles.git ~/.config/nvim && nvim
