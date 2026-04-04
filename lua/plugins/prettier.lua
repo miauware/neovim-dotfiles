@@ -15,8 +15,13 @@ return {
 
     -- INFO: Autoformat on save
     vim.api.nvim_create_autocmd("BufWritePre", {
-      pattern = { "*.js", "*.jsx", "*.ts", "*.tsx", "*.json", "*.css", "*.scss", "*.html", "*.py" },
+      pattern = {
+        "*.js", "*.jsx", "*.ts", "*.tsx",
+        "*.json", "*.css", "*.scss", "*.html",
+        "*.py"
+      },
       callback = function()
+        -- INFO: synchronous format to avoid race conditions
         vim.lsp.buf.format({ async = false })
       end,
     })

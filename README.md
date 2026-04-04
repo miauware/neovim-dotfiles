@@ -22,8 +22,6 @@ files structure:
 > ❗ **ATTENTION**:<br>
 >**⚠️ need to enable transparency in terminal settings to work properly**
 
->**⚠️ prettier.lua needs black formmater installed and added to the path**
-
 >**⚠️ install nodejs and yarn before using the commands below**
 
 for install requisites in arch based linux distros use :
