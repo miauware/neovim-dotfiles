@@ -1,37 +1,38 @@
 return {
-  -- INFO: LSP base config plugin
   'neovim/nvim-lspconfig',
+
   dependencies = {
     {
       'williamboman/mason.nvim',
-      config = function()
-        require('mason').setup()
-      end,
+      opts = {},
     },
+
     {
       'williamboman/mason-lspconfig.nvim',
       opts = {
-        ensure_installed = { 'pyright' },
-        automatic_installation = true,
-      },
-    },
-    {
-      'williamboman/mason-tool-installer.nvim',
-      opts = {
         ensure_installed = {
-          'black',
-          'prettier',
+          'lua_ls',
+          'pyright',
         },
       },
     },
 
-    { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-    'folke/neodev.nvim',
-  },
+    {
 
-  config = function()
-    -- INFO: new API (nvim 0.11+)
-    vim.lsp.config('pyright', {})
-    vim.lsp.enable('pyright')
-  end,
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+      opts = {
+        ensure_installed = {
+          'lua_ls',
+          'pyright',
+          'black',
+          'prettier',
+        },
+        run_on_start = true, -- INFO: force install on startup
+        start_delay = 0,     -- INFO: no delay
+      },
+    },
+
+    { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+    { 'folke/neodev.nvim', opts = {} },
+  },
 }
