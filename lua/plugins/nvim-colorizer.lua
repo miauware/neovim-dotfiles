@@ -1,6 +1,6 @@
 return{
   -- INFO: colorizer plugin
-  'norcalli/nvim-colorizer.lua',
+  'catgoose/nvim-colorizer.lua',
   event = 'VimEnter',
   config = function()
     require'colorizer'.setup(

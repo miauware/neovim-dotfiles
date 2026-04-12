@@ -1,3 +1,4 @@
+require('vim._core.ui2').enable()
 -- INFO: Set global leaders
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -46,17 +47,15 @@ require('telescope').setup({
 })
 pcall(require('telescope').load_extension, 'fzf')
 
--- INFO: LSP diagnostics customization
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics,
-  {
-    underline = true,
-    virtual_text = true,
-    virtual_text_prefix = "",
-    update_in_insert = true,
-    signs = true,
-  }
-)
+-- INFO: LSP diagnostics customization (Neovim 0.12+)
+vim.diagnostic.config({
+  underline = true,
+  virtual_text = {
+    prefix = "",
+  },
+  update_in_insert = true,
+  signs = true,
+})
 
 local signs = { Error = "❌", Warn = "", Hint = "💡", Info = "ℹ️" }
 for type, icon in pairs(signs) do
@@ -95,11 +94,20 @@ end
 local servers = {
   lua_ls = {
     Lua = {
+      diagnostics = {
+        globals = { "vim" }, -- INFO: fix undefined global vim
+      },
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
     },
   },
 }
+
+
+
+
+
+
 
 require('neodev').setup()
 
