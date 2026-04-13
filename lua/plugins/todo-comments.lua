@@ -55,6 +55,7 @@ return {
 
   dependencies = {
     "folke/todo-comments.nvim",
+    "ibhagwan/fzf-lua",
     "nvim-lua/plenary.nvim",
   },
 
