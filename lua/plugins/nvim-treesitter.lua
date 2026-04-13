@@ -1,75 +1,53 @@
 return {
-  'nvim-treesitter/nvim-treesitter',
-  lazy = false,
-  build = ':TSUpdate',
-    dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-  },
-  config = function()
-    -- INFO: load treesitter safely after plugin is ready
-    local ok, configs = pcall(require, 'nvim-treesitter.configs')
-    if not ok then
-      return
-    end
+    -- INFO: Tree-sitter
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            highlight = { enable = true },
+            indent = { enable = true },
+            ensure_installed = { "lua", "python", "javascript", "vim" },
+            auto_install = true,
+        },
+        config = function(_, opts)
+            require("nvim-treesitter").setup(opts)
+        end,
+    },
 
-    configs.setup({
-      ensure_installed = {
-        'c','css','cpp','go','markdown','lua',
-        'python','rust','tsx','typescript','vimdoc','vim'
-      },
-      auto_install = false,
-      highlight = { enable = true },
-      indent = { enable = true },
-
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = '<c-space>',
-          node_incremental = '<c-space>',
-          scope_incremental = '<c-s>',
-          node_decremental = '<M-space>',
-        },
-      },
-
-      textobjects = {
-        select = {
-          enable = true,
-          lookahead = true,
-          keymaps = {
-            ['aa'] = '@parameter.outer',
-            ['ia'] = '@parameter.inner',
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
-          },
-        },
-        move = {
-          enable = true,
-          set_jumps = true,
-          goto_next_start = {
-            [']m'] = '@function.outer',
-            [']]'] = '@class.outer',
-          },
-          goto_next_end = {
-            [']M'] = '@function.outer',
-            [']['] = '@class.outer',
-          },
-          goto_previous_start = {
-            ['[m'] = '@function.outer',
-            ['[['] = '@class.outer',
-          },
-          goto_previous_end = {
-            ['[M'] = '@function.outer',
-            ['[]'] = '@class.outer',
-          },
-        },
-        swap = {
-          enable = true,
-          swap_next = { ['<leader>a'] = '@parameter.inner' },
-          swap_previous = { ['<leader>A'] = '@parameter.inner' },
-        },
-      },
-    })
-  end
+    -- INFO: indent-blankline 
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        main = "ibl",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            -- Configuração mais básica que funciona 100%
+            require("ibl").setup({
+                indent = {
+                    char = "│",
+                    highlight = {
+                        "Function",
+                        "Statement",
+                        "Conditional",
+                        "Repeat",
+                        "Operator",
+                        "Keyword",
+                        "String",
+                    },
+                },
+                scope = {
+                    enabled = true,
+                },
+            })
+            
+           
+            vim.api.nvim_set_hl(0, "Function", { fg = "#E06C75" })
+            vim.api.nvim_set_hl(0, "Statement", { fg = "#E5C07B" })
+            vim.api.nvim_set_hl(0, "Conditional", { fg = "#61AFEF" })
+            vim.api.nvim_set_hl(0, "Repeat", { fg = "#D19A66" })
+            vim.api.nvim_set_hl(0, "Operator", { fg = "#98C379" })
+            vim.api.nvim_set_hl(0, "Keyword", { fg = "#C678DD" })
+            vim.api.nvim_set_hl(0, "String", { fg = "#56B6C2" })
+        end,
+    },
 }
