@@ -22,11 +22,11 @@ files structure:
 > ❗ **ATTENTION**:<br>
 >**⚠️ need to enable transparency in terminal settings to work properly**
 
->**⚠️ install nodejs and yarn before using the commands below**
+>**⚠️ install nodejs,npm,yarn and ripgrep before using the commands below**
 
 for install requisites in arch based linux distros use :
 ```bash
-sudo pacman -S nodejs npm yarn python-black
+sudo pacman -S nodejs npm yarn ripgrep
 ```
 
 >**⚠️ on windows you need to install neovim and the c/c++ compilation tools and add them to the path variable for compile treesitter**
@@ -88,11 +88,37 @@ git clone --depth 1 https://github.com/miauware/neovim-dotfiles.git %LOCALAPPDAT
 
 ### Commands:
 - Sessions managament with SessionStart SessionStop SessionSave SessionDelete and SessionLoad
-- enable/disable transparency with TransparentToggle command
-
+- enable/disable transparency with `TransparentToggle` command
+<table>
+<tr>
+<td>
 
 ![Screenshot](images/1.png)
-
-- `ctrl+]` in insert mode open comment menu with categories to add
+</td><td>
 
 ![Screenshot](images/2.png)
+</td>
+<tr>
+</table>
+
+-  `TodoFzfLua` , `TodoTelescope` , `TodoQuickFix` open and search comments in current project
+<table><tr>
+<td>
+
+![Screenshot](images/4.png)
+</td>
+<td>
+
+![Screenshot](images/5.png)
+</td>
+</tr>
+<table>
+
+
+- `ctrl+]` in insert mode open comment menu with categories to add
+<table><tr><td>
+
+![Screenshot](images/3.png)
+<td>
+</tr>
+</table>

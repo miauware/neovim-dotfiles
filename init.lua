@@ -250,9 +250,23 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+
+-- NOTE: CursorColumn controls the vertical cursor line highlight
+vim.api.nvim_set_hl(0, "CursorColumn", {
+  bg = "#3a3a3a",
+  blend = 20, -- INFO: 0 = solid, 100 = invisible
+})
+
+-- NOTE: optional horizontal cursor line
+vim.api.nvim_set_hl(0, "CursorLine", {
+  bg = "#2a2a2a",
+  blend = 20,
+})
+
 -- INFO: Automatically save the last colorscheme used
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function(args)
+    vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#3a3a3a", blend = 20 })
     local theme = args.match
     local path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua"
     local file = io.open(path, "w")
@@ -267,3 +281,4 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     end
   end,
 })
+
