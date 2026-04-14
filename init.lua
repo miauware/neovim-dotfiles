@@ -2,7 +2,6 @@ require('vim._core.ui2').enable()
 -- INFO: Set global leaders
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 -- INFO: Lazy.nvim bootstrap
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
@@ -23,29 +22,6 @@ require('lazy').setup({
   'tpope/vim-sleuth',
   { import = 'plugins' },
 }, {})
-
--- INFO: Highlight text on yank
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
-})
-
--- INFO: Telescope configuration
-require('telescope').setup({
-  defaults = {
-    mappings = {
-      i = {
-        ['<C-u>'] = false,
-        ['<C-d>'] = false,
-      },
-    },
-  },
-})
-pcall(require('telescope').load_extension, 'fzf')
 
 -- INFO: LSP diagnostics customization (Neovim 0.12+)
 vim.diagnostic.config({
@@ -103,14 +79,7 @@ local servers = {
   },
 }
 
-
-
-
-
-
-
 require('neodev').setup()
-
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
@@ -191,45 +160,13 @@ cmp.setup({
 
 cmp.setup.cmdline('/', { sources = { { name = 'buffer' } } })
 
--- INFO: UI and editor options
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.o.cmdheight = 0
-vim.opt.termguicolors = true
-vim.cmd([[hi NvimTreeNormalNC guibg=NONE]])
-vim.cmd([[highlight NvimTreeNormal guibg=NONE ctermbg=NONE]])
-vim.g.nvim_tree_highlight_opened_files = 1
-vim.api.nvim_set_option('cursorcolumn', true)
-vim.api.nvim_set_option('cursorline', true)
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.softtabstop = 4
-vim.opt.expandtab = true
-vim.opt.autoindent = true
-vim.o.hlsearch = false
-vim.wo.number = true
-vim.o.mouse = 'a'
-vim.o.clipboard = 'unnamedplus'
-vim.o.breakindent = true
-vim.o.undofile = true
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.wo.signcolumn = 'yes'
-vim.o.updatetime = 250
-vim.o.timeoutlen = 300
-vim.o.completeopt = 'menuone,noselect'
-vim.o.termguicolors = true
-vim.wo.wrap = true
-vim.o.linebreak = true
-
--- INFO: Cursor color
-vim.cmd('highlight Cursor guibg=#ab34eb')
-
 -- INFO: Load colorscheme
 local themes = require('colorscheme')
 vim.cmd("colorscheme " .. themes.colorscheme)
 
 require('keybindings')
+require('options')
+require('autocmd')
 
 -- INFO: Simplify right-click popup menu
 vim.cmd('aunmenu PopUp.How-to\\ disable\\ mouse')
@@ -242,43 +179,4 @@ vim.api.nvim_command([[
   menu PopUp.Quit <cmd>quit<cr>
 ]])
 
--- INFO: Disable automatic comment continuation
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp", "java", "javascript", "typescript", "rust", "go" },
-  callback = function()
-    vim.opt_local.formatoptions:remove({ "r", "o" })
-  end,
-})
-
-
--- NOTE: CursorColumn controls the vertical cursor line highlight
-vim.api.nvim_set_hl(0, "CursorColumn", {
-  bg = "#3a3a3a",
-  blend = 20, -- INFO: 0 = solid, 100 = invisible
-})
-
--- NOTE: optional horizontal cursor line
-vim.api.nvim_set_hl(0, "CursorLine", {
-  bg = "#2a2a2a",
-  blend = 20,
-})
-
--- INFO: Automatically save the last colorscheme used
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function(args)
-    vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#3a3a3a", blend = 20 })
-    local theme = args.match
-    local path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua"
-    local file = io.open(path, "w")
-    if file then
-      file:write('local M = {}\n')
-      file:write('-- INFO: Set the color scheme you want here\n')
-      file:write(string.format('M.colorscheme = "%s"\n', theme))
-      file:write('return M\n')
-      file:close()
-    else
-      vim.notify("Failed to write to colorscheme.lua", vim.log.levels.ERROR)
-    end
-  end,
-})
 
